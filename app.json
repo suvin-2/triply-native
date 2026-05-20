@@ -12,9 +12,14 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.triply.app",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["supertoss", "kakaopay"]
+      }
     },
     "android": {
+      "package": "com.triply.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
