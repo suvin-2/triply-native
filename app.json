@@ -13,16 +13,13 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.triply.app",
+      "bundleIdentifier": "com.suvin.triply.travel",
       "infoPlist": {
-        "LSApplicationQueriesSchemes": [
-          "supertoss",
-          "kakaopay"
-        ]
+        "LSApplicationQueriesSchemes": ["supertoss", "kakaopay"]
       }
     },
     "android": {
-      "package": "com.triply.app",
+      "package": "com.triply.travel",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#EDE8DF"
@@ -32,8 +29,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-sharing"
-    ]
+    "plugins": ["expo-sharing"]
   }
 }

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Linking,
+  Platform,
   View,
 } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
@@ -15,11 +16,16 @@ import * as Sharing from "expo-sharing";
 
 const WEB_URL = "https://triply-app-ecru.vercel.app/";
 
-/** 앱 미설치 시 대신 열 플레이스토어 URL */
+/** 앱 미설치 시 대신 열 스토어 URL (iOS: App Store, Android: Play Store) */
 const STORE_FALLBACK: Record<string, string> = {
   supertoss:
-    "https://play.google.com/store/apps/details?id=viva.republica.toss",
-  kakaopay: "https://play.google.com/store/apps/details?id=com.kakaopay.app",
+    Platform.OS === "ios"
+      ? "https://apps.apple.com/app/toss/id839333328"
+      : "https://play.google.com/store/apps/details?id=viva.republica.toss",
+  kakaopay:
+    Platform.OS === "ios"
+      ? "https://apps.apple.com/app/kakaopay/id1108184706"
+      : "https://play.google.com/store/apps/details?id=com.kakaopay.app",
 };
 
 /** 웹앱 홈 화면 여부 — pathname이 '/'이면 뒤로가기 대신 백그라운드로 */
@@ -162,7 +168,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EDE8DF",
+    backgroundColor: "#ffffff",
   },
   webview: {
     flex: 1,
@@ -175,6 +181,6 @@ const styles = StyleSheet.create({
     left: 0,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#EDE8DF",
+    backgroundColor: "#ffffff",
   },
 });
