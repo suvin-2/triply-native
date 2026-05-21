@@ -85,21 +85,30 @@ export default function App() {
                   msg.data &&
                   msg.filename
                 ) {
-                  // Android 13(API 33)+ 에서 READ_MEDIA_IMAGES 권한 필요
-                  const { status } =
+                  // Android 13(API 33)+ READ_MEDIA_IMAGES 권한 필요
+                  const { status, canAskAgain } =
                     await MediaLibrary.requestPermissionsAsync();
                   if (status !== "granted") {
-                    webviewRef.current?.injectJavaScript(
-                      `alert('갤러리 저장 권한이 필요해요. 설정에서 허용해주세요.');`,
-                    );
+                    if (!canAskAgain) {
+                      // 이전에 영구 거부 — 설정 화면으로 유도
+                      await Linking.openSettings();
+                    } else {
+                      webviewRef.current?.injectJavaScript(
+                        `window.__triplyCallback && window.__triplyCallback({type:'imageError',message:'갤러리 저장 권한이 필요해요.'});`,
+                      );
+                    }
                     return;
                   }
-                  const fileUri =
-                    FileSystem.cacheDirectory + msg.filename;
+                  const cacheDir = FileSystem.cacheDirectory;
+                  if (!cacheDir) throw new Error("캐시 디렉토리를 찾을 수 없어요.");
+                  const fileUri = cacheDir + msg.filename;
                   await FileSystem.writeAsStringAsync(fileUri, msg.data, {
                     encoding: FileSystem.EncodingType.Base64,
                   });
                   await MediaLibrary.saveToLibraryAsync(fileUri);
+                  webviewRef.current?.injectJavaScript(
+                    `window.__triplyCallback && window.__triplyCallback({type:'imageSaved'});`,
+                  );
                 }
 
                 if (
@@ -108,15 +117,22 @@ export default function App() {
                   msg.filename
                 ) {
                   // 공유는 cacheDirectory(앱 내부)를 쓰므로 갤러리 권한 불필요
-                  const fileUri =
-                    FileSystem.cacheDirectory + msg.filename;
+                  const cacheDir = FileSystem.cacheDirectory;
+                  if (!cacheDir) throw new Error("캐시 디렉토리를 찾을 수 없어요.");
+                  const fileUri = cacheDir + msg.filename;
                   await FileSystem.writeAsStringAsync(fileUri, msg.data, {
                     encoding: FileSystem.EncodingType.Base64,
                   });
                   await Sharing.shareAsync(fileUri);
+                  webviewRef.current?.injectJavaScript(
+                    `window.__triplyCallback && window.__triplyCallback({type:'imageShared'});`,
+                  );
                 }
-              } catch {
-                // 파싱 불가한 메시지 또는 처리 오류는 무시
+              } catch (e) {
+                console.error("[triply-native] 이미지 처리 오류:", e);
+                webviewRef.current?.injectJavaScript(
+                  `window.__triplyCallback && window.__triplyCallback({type:'imageError',message:'이미지 처리에 실패했어요. 다시 시도해주세요.'});`,
+                );
               }
             })();
           }}
