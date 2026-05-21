@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "triply-native",
+    "name": "triply",
     "slug": "triply-native",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,21 +15,25 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.triply.app",
       "infoPlist": {
-        "LSApplicationQueriesSchemes": ["supertoss", "kakaopay"]
+        "LSApplicationQueriesSchemes": [
+          "supertoss",
+          "kakaopay"
+        ]
       }
     },
     "android": {
       "package": "com.triply.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#EDE8DF"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-sharing"
+    ]
   }
 }
