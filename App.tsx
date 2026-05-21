@@ -19,7 +19,7 @@ const WEB_URL = "https://triply-app-ecru.vercel.app/";
 const STORE_FALLBACK: Record<string, string> = {
   supertoss:
     "https://play.google.com/store/apps/details?id=viva.republica.toss",
-  kakaopay: "https://play.google.com/store/apps/details?id=com.kakao.pay",
+  kakaopay: "https://play.google.com/store/apps/details?id=com.kakaopay.app",
 };
 
 /** 웹앱 홈 화면 여부 — pathname이 '/'이면 뒤로가기 대신 백그라운드로 */
@@ -94,7 +94,7 @@ export default function App() {
                       await Linking.openSettings();
                     } else {
                       webviewRef.current?.injectJavaScript(
-                        `window.__triplyCallback && window.__triplyCallback({type:'imageError',message:'갤러리 저장 권한이 필요해요.'});`,
+                        `window.__triplyCallback && window.__triplyCallback({type:'imageError',message:'갤러리 저장 권한이 필요해요.'}); true;`,
                       );
                     }
                     return;
@@ -107,7 +107,7 @@ export default function App() {
                   });
                   await MediaLibrary.saveToLibraryAsync(fileUri);
                   webviewRef.current?.injectJavaScript(
-                    `window.__triplyCallback && window.__triplyCallback({type:'imageSaved'});`,
+                    `window.__triplyCallback && window.__triplyCallback({type:'imageSaved'}); true;`,
                   );
                 }
 
@@ -125,13 +125,13 @@ export default function App() {
                   });
                   await Sharing.shareAsync(fileUri);
                   webviewRef.current?.injectJavaScript(
-                    `window.__triplyCallback && window.__triplyCallback({type:'imageShared'});`,
+                    `window.__triplyCallback && window.__triplyCallback({type:'imageShared'}); true;`,
                   );
                 }
               } catch (e) {
                 console.error("[triply-native] 이미지 처리 오류:", e);
                 webviewRef.current?.injectJavaScript(
-                  `window.__triplyCallback && window.__triplyCallback({type:'imageError',message:'이미지 처리에 실패했어요. 다시 시도해주세요.'});`,
+                  `window.__triplyCallback && window.__triplyCallback({type:'imageError',message:'이미지 처리에 실패했어요. 다시 시도해주세요.'}); true;`,
                 );
               }
             })();
