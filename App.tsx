@@ -24,7 +24,7 @@ const STORE_FALLBACK: Record<string, string> = {
       : "https://play.google.com/store/apps/details?id=viva.republica.toss",
   kakaopay:
     Platform.OS === "ios"
-      ? "https://apps.apple.com/app/kakaopay/id1108184706"
+      ? "https://apps.apple.com/app/id1494116725"
       : "https://play.google.com/store/apps/details?id=com.kakaopay.app",
 };
 
@@ -55,7 +55,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
         <StatusBar style="dark" />
         <WebView
           ref={webviewRef}
