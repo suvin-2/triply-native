@@ -7,15 +7,16 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#EDE8DF"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.suvin.triply.travel",
       "infoPlist": {
-        "LSApplicationQueriesSchemes": ["supertoss", "kakaopay"]
+        "LSApplicationQueriesSchemes": ["supertoss", "kakaopay"],
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
       }
     },
     "android": {

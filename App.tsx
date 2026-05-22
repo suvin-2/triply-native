@@ -14,7 +14,9 @@ import * as FileSystem from "expo-file-system/legacy";
 import * as MediaLibrary from "expo-media-library";
 import * as Sharing from "expo-sharing";
 
-const WEB_URL = "https://triply-app-ecru.vercel.app/";
+const WEB_URL = __DEV__
+  ? "http://192.168.10.111:5173"
+  : "https://triply-app-ecru.vercel.app/";
 
 /** 앱 미설치 시 대신 열 스토어 URL (iOS: App Store, Android: Play Store) */
 const STORE_FALLBACK: Record<string, string> = {
@@ -41,6 +43,7 @@ export default function App() {
   const webviewRef = useRef<WebView>(null);
   const [canGoBack, setCanGoBack] = useState(false);
   const [currentUrl, setCurrentUrl] = useState(WEB_URL);
+  const [introComplete, setIntroComplete] = useState(false);
 
   useEffect(() => {
     const handler = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -55,12 +58,19 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
+      <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: introComplete ? "#ffffff" : "#EDE8DF" },
+        ]}
+        edges={["top", "bottom"]}
+      >
         <StatusBar style="dark" />
         <WebView
           ref={webviewRef}
           source={{ uri: WEB_URL }}
           style={styles.webview}
+          allowsBackForwardNavigationGestures={Platform.OS === "ios"}
           onNavigationStateChange={(state) => {
             setCanGoBack(state.canGoBack);
             setCurrentUrl(state.url);
@@ -75,6 +85,10 @@ export default function App() {
                   filename?: string;
                 };
 
+                if (msg.type === "introComplete") {
+                  setIntroComplete(true);
+                }
+
                 if (msg.type === "openDeepLink" && msg.url) {
                   const supported = await Linking.canOpenURL(msg.url);
                   if (supported) {
@@ -86,11 +100,7 @@ export default function App() {
                   }
                 }
 
-                if (
-                  msg.type === "saveImage" &&
-                  msg.data &&
-                  msg.filename
-                ) {
+                if (msg.type === "saveImage" && msg.data && msg.filename) {
                   // Android 13(API 33)+ READ_MEDIA_IMAGES 권한 필요
                   const { status, canAskAgain } =
                     await MediaLibrary.requestPermissionsAsync();
@@ -106,7 +116,8 @@ export default function App() {
                     return;
                   }
                   const cacheDir = FileSystem.cacheDirectory;
-                  if (!cacheDir) throw new Error("캐시 디렉토리를 찾을 수 없어요.");
+                  if (!cacheDir)
+                    throw new Error("캐시 디렉토리를 찾을 수 없어요.");
                   const fileUri = cacheDir + msg.filename;
                   await FileSystem.writeAsStringAsync(fileUri, msg.data, {
                     encoding: FileSystem.EncodingType.Base64,
@@ -117,14 +128,11 @@ export default function App() {
                   );
                 }
 
-                if (
-                  msg.type === "shareImage" &&
-                  msg.data &&
-                  msg.filename
-                ) {
+                if (msg.type === "shareImage" && msg.data && msg.filename) {
                   // 공유는 cacheDirectory(앱 내부)를 쓰므로 갤러리 권한 불필요
                   const cacheDir = FileSystem.cacheDirectory;
-                  if (!cacheDir) throw new Error("캐시 디렉토리를 찾을 수 없어요.");
+                  if (!cacheDir)
+                    throw new Error("캐시 디렉토리를 찾을 수 없어요.");
                   const fileUri = cacheDir + msg.filename;
                   await FileSystem.writeAsStringAsync(fileUri, msg.data, {
                     encoding: FileSystem.EncodingType.Base64,
@@ -153,6 +161,7 @@ export default function App() {
             }
             return true;
           }}
+          // onLoad={() => setWebReady(true)}
           renderLoading={() => (
             <View style={styles.loader}>
               <ActivityIndicator size="large" color="#E8432D" />
@@ -168,10 +177,11 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#EDE8DF",
   },
   webview: {
     flex: 1,
+    backgroundColor: "#ffffff",
   },
   loader: {
     position: "absolute",
@@ -181,6 +191,6 @@ const styles = StyleSheet.create({
     left: 0,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: "#EDE8DF",
   },
 });
